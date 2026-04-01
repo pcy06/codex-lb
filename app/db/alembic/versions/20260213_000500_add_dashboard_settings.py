@@ -41,7 +41,7 @@ def upgrade() -> None:
     insert_columns = ["id", "sticky_threads_enabled", "prefer_earlier_reset_accounts"]
     params: dict[str, int | bool] = {
         "id": 1,
-        "sticky_threads_enabled": False,
+        "sticky_threads_enabled": True,
         "prefer_earlier_reset_accounts": False,
     }
 
