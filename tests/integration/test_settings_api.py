@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import pytest
-from sqlalchemy import text
 
+from app.db.models import DashboardSettings
 from app.db.session import SessionLocal
 
 pytestmark = pytest.mark.integration
@@ -73,7 +73,9 @@ async def test_settings_api_get_and_update(async_client):
 @pytest.mark.asyncio
 async def test_settings_api_recreates_deleted_settings_with_sticky_threads_enabled(async_client):
     async with SessionLocal() as session:
-        await session.execute(text("DELETE FROM dashboard_settings"))
+        settings = await session.get(DashboardSettings, 1)
+        assert settings is not None
+        await session.delete(settings)
         await session.commit()
 
     response = await async_client.get("/api/settings")

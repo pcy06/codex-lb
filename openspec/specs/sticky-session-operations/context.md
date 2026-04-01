@@ -18,7 +18,8 @@ See `openspec/specs/sticky-session-operations/spec.md` for normative requirement
 - Historical sticky-session rows created before the `kind` column are backfilled conservatively to a durable kind to avoid accidental purge.
 - Durable `codex_session` and `sticky_thread` mappings are never deleted by automatic cleanup.
 - Sticky threads and prompt-cache affinity solve different problems. Sticky threads keep conversation turns on the same upstream account when the route depends on dashboard thread affinity, while prompt-cache affinity keeps repeated cache-keyed `/v1` requests warm only within a bounded TTL.
-- Disabling sticky threads can increase token usage on long-running conversations for routes that rely on dashboard thread affinity, because later turns may land on a different upstream account and need to replay more prior context instead of reusing the same account-local conversation path.
+- Disabling sticky threads can increase token usage on long-running conversations for routes that rely on dashboard thread affinity.
+- Without sticky threads, later turns may land on a different upstream account and need to replay more prior context instead of reusing the same account-local conversation path.
 
 ## Failure Modes
 
@@ -33,5 +34,7 @@ See `openspec/specs/sticky-session-operations/spec.md` for normative requirement
 ## Operational Notes
 
 - Prefer leaving sticky threads enabled for long-running chat-style sessions unless you have a specific balancing reason to disable them.
-- If operators turn sticky threads off, monitor for increased prompt sizes, higher token spend, and user reports that long conversations lose continuity when requests rebalance across accounts.
+- If operators turn sticky threads off, monitor for increased prompt sizes.
+- If operators turn sticky threads off, monitor for higher token spend.
+- If operators turn sticky threads off, monitor for user reports that long conversations lose continuity when requests rebalance across accounts.
 - See `openspec/specs/sticky-session-operations/spec.md` for the normative sticky-session and cleanup requirements, and `openspec/specs/responses-api-compat/spec.md` for Codex/session-specific routing contracts that can preserve continuity independently of the dashboard toggle.
