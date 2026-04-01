@@ -20,7 +20,7 @@ class SettingsRepository:
 
         row = DashboardSettings(
             id=_SETTINGS_ID,
-            sticky_threads_enabled=False,
+            sticky_threads_enabled=True,
             upstream_stream_transport="default",
             prefer_earlier_reset_accounts=False,
             routing_strategy="usage_weighted",

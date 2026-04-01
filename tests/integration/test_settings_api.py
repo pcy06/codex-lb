@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import pytest
+from sqlalchemy import text
+
+from app.db.session import SessionLocal
 
 pytestmark = pytest.mark.integration
 
@@ -10,7 +13,7 @@ async def test_settings_api_get_and_update(async_client):
     response = await async_client.get("/api/settings")
     assert response.status_code == 200
     payload = response.json()
-    assert payload["stickyThreadsEnabled"] is False
+    assert payload["stickyThreadsEnabled"] is True
     assert payload["upstreamStreamTransport"] == "default"
     assert payload["preferEarlierResetAccounts"] is False
     assert payload["routingStrategy"] == "usage_weighted"
@@ -65,3 +68,16 @@ async def test_settings_api_get_and_update(async_client):
     assert payload["totpRequiredOnLogin"] is False
     assert payload["totpConfigured"] is False
     assert payload["apiKeyAuthEnabled"] is True
+
+
+@pytest.mark.asyncio
+async def test_settings_api_recreates_deleted_settings_with_sticky_threads_enabled(async_client):
+    async with SessionLocal() as session:
+        await session.execute(text("DELETE FROM dashboard_settings"))
+        await session.commit()
+
+    response = await async_client.get("/api/settings")
+    assert response.status_code == 200
+    payload = response.json()
+
+    assert payload["stickyThreadsEnabled"] is True
